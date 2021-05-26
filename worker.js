@@ -23,4 +23,4 @@ onmessage = (e) => {
 }
 
 // Import the Wasm loader generated from our Emscripten build.
-self.importScripts('mymp4.js');
+self.importScripts('Builder.js');
