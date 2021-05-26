@@ -1,16 +1,12 @@
 #include <emscripten.h>
 #include <emscripten/bind.h>
 #include <inttypes.h>
+#include "DecoderLib/decoder.h"
 
 #include <string>
 #include <vector>
 
 using namespace emscripten;
-
-extern "C"
-{
-#include <libavcodec/avcodec.h>
-};
 
 typedef struct Response
 {
@@ -22,7 +18,7 @@ typedef struct Response
 Response run(std::string filename)
 {
   // Open the file and read header.
-  std::string name(avcodec_get_name(AV_CODEC_ID_H264));
+  std::string name = GetCodecName();
 
   // Initialize response struct with format data.
   Response r = {
