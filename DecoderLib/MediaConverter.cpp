@@ -1351,7 +1351,7 @@ ErrorCode CMediaConverter::drainAudioFifo(MediaReaderState* state, bool needsFlu
         //init the encoded packet
         if (!state->audioEncoder.encodePkt)
             state->audioEncoder.encodePkt = av_packet_alloc();
-        av_init_packet(state->audioEncoder.encodePkt);
+        //av_init_packet(state->audioEncoder.encodePkt);
         state->audioEncoder.encodePkt->data = nullptr;
         state->audioEncoder.encodePkt->size = 0;
         state->audioEncoder.encodeFrame->pts = state->audioEncoder.nextEncodePts;

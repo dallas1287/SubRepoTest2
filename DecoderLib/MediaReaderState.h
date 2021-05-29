@@ -303,7 +303,7 @@ public:
 			encodePkt = av_packet_alloc();
 		encodePkt->data = nullptr;
 		encodePkt->size = 0;
-		av_init_packet(encodePkt);
+		//av_init_packet(encodePkt);
 		//encode frame
 		int ret = avcodec_send_frame(encodeCodecCtx, inputFrame);
 		if (ret < 0)
