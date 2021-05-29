@@ -1,4 +1,4 @@
-add_library(DecoderLib decoder.cxx)
+add_library(DecoderLib MediaReaderState.cpp MediaConverter.cpp decoder.cxx)
 
 set(FFMPEG_INCLUDE_DIR /home/dallas/ffmpeg/wasm/include)
 set(FFMPEG_LIB_DIR /home/dallas/ffmpeg/wasm/lib)

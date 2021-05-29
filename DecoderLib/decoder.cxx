@@ -1,12 +1,24 @@
 #include "decoder.h"
+#include "MediaConverter.h"
 
-extern "C"
+static CMediaConverter mc;
+
+int OpenFile(std::string filename)
 {
-    #include <libavcodec/avcodec.h>
+    mc.openMediaReader(filename.c_str());
+    return mc.MRState().video_stream_index;
 }
 
 std::string GetCodecName()
 {
-    std::string version(avcodec_get_name(AV_CODEC_ID_H264));
-    return version;
+    if(mc.MRState().CodecName() == nullptr)
+        return std::string("No codec name available");
+    
+    return std::string(mc.MRState().CodecName());
+    //return std::string(avcodec_get_name(AV_CODEC_ID_H264));
+}
+
+int GetFrameCount()
+{
+    return mc.MRState().VideoFrameCt();
 }

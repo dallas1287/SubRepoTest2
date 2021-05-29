@@ -17,14 +17,14 @@ typedef struct Response
 
 Response run(std::string filename)
 {
-  // Open the file and read header.
-  std::string name = GetCodecName();
-
-  // Initialize response struct with format data.
+  int i = OpenFile(filename);
+  std::string name(GetCodecName());
+  int d = GetFrameCount();
+  
   Response r = {
       .format = name,
-      .duration = 22,
-      .streams = 33,
+      .duration = d,
+      .streams = i,
   };
 
   return r;
