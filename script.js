@@ -4,6 +4,11 @@
     const input = document.querySelector('input');
     input.addEventListener('change', onFileChange);
 
+    document.getElementById('play').addEventListener('click', onPlayClicked);
+    document.getElementById('pause').addEventListener('click', onPauseClicked);
+    document.getElementById('nextframe').addEventListener('click', onNextClicked); 
+    document.getElementById('prevframe').addEventListener('click', onPrevClicked);
+
     // Listen for messages back from worker and render to DOM.
     worker.onmessage = (e) => {
         const data = e.data;
@@ -25,4 +30,17 @@
     function onFileChange(event) {
         const file = input.files[0];
         worker.postMessage([ file ]);
+    }
+
+    function onPlayClicked(event) {
+        console.log('Play clicked');
+    }
+    function onPauseClicked(event) {
+        console.log('Pause clicked');
+    }
+    function onNextClicked(event) {
+        console.log('Next clicked');
+    }
+    function onPrevClicked(event) {
+        console.log('Prev clicked');
     }
