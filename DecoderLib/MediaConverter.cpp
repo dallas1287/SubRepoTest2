@@ -66,7 +66,7 @@ ErrorCode CMediaConverter::openMediaReader(MediaReaderState* state, const char* 
             if (!state->video_codec_ctx)
                 return ErrorCode::NO_CODEC_CTX;
 
-            state->video_codec_ctx->thread_count = std::thread::hardware_concurrency();
+            //state->video_codec_ctx->thread_count = std::thread::hardware_concurrency();
 
             if (avcodec_parameters_to_context(state->video_codec_ctx, av_codec_params) < 0)
                 return ErrorCode::CODEC_CTX_UNINIT;
