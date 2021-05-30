@@ -15,7 +15,6 @@ std::string GetCodecName()
         return std::string("No codec name available");
     
     return std::string(mc.MRState().CodecName());
-    //return std::string(avcodec_get_name(AV_CODEC_ID_H264));
 }
 
 int GetFrameCount()
