@@ -16,8 +16,7 @@ onmessage = (e) => {
             FS.mkdir('/work');
         }
         FS.mount(WORKERFS, { files: [file] }, '/work');
-    
-        const instance = new Module.MediaPlayer();
+     
         // Run the Wasm function we exported.
         const info = instance.OpenFile('/work/' + file.name);
         // Post message back to main thread.
@@ -28,7 +27,8 @@ onmessage = (e) => {
     }
     else if(cmd === 'play')
     {
-        const frame = instance.Play();
+        const frame = instance.RetrieveFrame();
+        console.log(frame.buffer.size());
         postMessage(frame);
     }
     else if(cmd === 'pause')
@@ -37,11 +37,16 @@ onmessage = (e) => {
     }
     else if(cmd === 'next frame')
     {
-        instance.FrameStep();
+        const frame = instance.RetrieveFrame();
+        console.log('in worker');
+        console.log(frame);
+        console.log(frame.buffer.size());
+        postMessage(frame);
     }
     else if(cmd === 'prev frame')
     {
-        instance.RevFrameStep();
+        const response = instance.SeekTo(-1);
+        console.log(response);
     }
 
     instance.delete();

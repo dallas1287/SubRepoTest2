@@ -18,20 +18,23 @@
             console.log("no data available");
             return;
         }
+
+        console.log(data);
         const results = document.getElementById('results');
-        const ul = document.createElement('ul');
-        const li = document.createElement('li');
-        li.textContent = "format: " + data.format;
-        const li2 = document.createElement('li');
-        li2.textContent = "duration: " + data.duration;
-        const li3 = document.createElement('li');
-        li3.textContent = "frame number: " + data.framePts;
-        const li4 = document.createElement('li');
-        li4.textContent = "is open: " + data.isOpen;
-        ul.appendChild(li);
-        ul.appendChild(li2);
-        ul.appendChild(li3);
-        ul.appendChild(li4);
+        var ul = document.createElement('ul');  
+        for(var prop in data)
+        {
+            console.log(`${prop}: ${data[prop]}`);
+            var li = document.createElement('li');
+            if(prop !== 'buffer')
+            {
+                li.textContent = prop + ": " + data[prop];
+                ul.appendChild(li);
+            }    
+            //else
+            //    li.textContent = prop + ": " + data.buffer.size();
+
+        }    
         results.appendChild(ul);
     }
 
