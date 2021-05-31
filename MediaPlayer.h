@@ -1,6 +1,7 @@
 #include <emscripten.h>
 #include <emscripten/bind.h>
 #include <inttypes.h>
+#include <vector>
 
 using namespace emscripten;
 
@@ -12,6 +13,14 @@ typedef struct Response
   bool isOpen;
 } Response;
 
+typedef struct BufferResponse
+{
+  long framePts;
+  int width;
+  int height;
+  std::vector<unsigned char> buffer;
+} BufferResponse;
+
 class MediaPlayer
 {
 public:
@@ -19,10 +28,6 @@ public:
     ~MediaPlayer();
     
     Response OpenFile(std::string filename);
-    Response Play();
-    void Pause();
-    void FrameStep();
-    void RevFrameStep();
-    void CountStep();
-    void RevCountStep();
+    BufferResponse RetrieveFrame();
+    Response SeekTo(long pts);
 };

@@ -33,53 +33,19 @@ Response MediaPlayer::OpenFile(std::string filename)
   return r;
 }
 
-Response MediaPlayer::Play()
+BufferResponse MediaPlayer::RetrieveFrame()
 {
-  if(!m_mediaConverter.MRState().IsOpened())
-  {
-    Response err = {
-      .format = "file not opened",
-      .duration = 0,
-      .framePts = -1,
-      .isOpen = false
-    };
-    return err;
-  }  
-  auto ret = m_mediaConverter.processVideoPacketsIntoFrames();
-  int duration = m_mediaConverter.MRState().VideoDuration();
-  int pts = m_mediaConverter.MRState().VideoFramePts();
-  Response r = {
-    .format = "processing frame",
-    .duration = duration,
-    .framePts = pts,
-    .isOpen = m_mediaConverter.MRState().IsOpened()
-  };
-  return r;
+  BufferResponse response;
+  m_mediaConverter.readVideoFrame(response.buffer);
+  response.framePts = m_mediaConverter.MRState().VideoFramePts();
+  response.width = m_mediaConverter.MRState().VideoWidth();
+  response.height = m_mediaConverter.MRState().VideoHeight();
+  return response;
 }
 
-void MediaPlayer::Pause()
+Response MediaPlayer::SeekTo(long pts)
 {
-  std::cout << "Media Player Pause" << std::endl;
-}
-
-void MediaPlayer::FrameStep()
-{
-  std::cout << "Media Player Frame Step" << std::endl;
-}
-
-void MediaPlayer::RevFrameStep()
-{
-  std::cout << "Media Player Reverse Frame Step" << std::endl;
-}
-
-void MediaPlayer::CountStep()
-{
-
-}
-
-void MediaPlayer::RevCountStep()
-{
-
+  std::cout << "Seeking to: " << std::to_string(pts) << std::endl;
 }
 
 EMSCRIPTEN_BINDINGS(MediaPlayerModule)
@@ -89,12 +55,18 @@ EMSCRIPTEN_BINDINGS(MediaPlayerModule)
       .field("duration", &Response::duration)
       .field("framePts", &Response::framePts)
       .field("isOpen", &Response::isOpen);
+    
+    emscripten::value_object<BufferResponse>("BufferResponse")
+      .field("framePts", &BufferResponse::framePts)
+      .field("width", &BufferResponse::width)
+      .field("height", &BufferResponse::height)
+      .field("buffer", &BufferResponse::buffer);
       
-  class_<MediaPlayer>("MediaPlayer")
+    class_<MediaPlayer>("MediaPlayer")
     .constructor()
     .function("OpenFile", &MediaPlayer::OpenFile)
-    .function("Play", &MediaPlayer::Play)
-    .function("Pause", &MediaPlayer::Pause)
-    .function("FrameStep", &MediaPlayer::FrameStep)
-    .function("RevFrameStep", &MediaPlayer::RevFrameStep);
+    .function("RetrieveFrame", &MediaPlayer::RetrieveFrame)
+    .function("SeekTo", &MediaPlayer::SeekTo);
+
+    register_vector<unsigned char>("VideoBuffer");
 }
