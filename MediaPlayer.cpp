@@ -43,9 +43,28 @@ BufferResponse MediaPlayer::RetrieveFrame()
   return response;
 }
 
+DataPtrResponse MediaPlayer::RetrieveFramePtr()
+{
+  DataPtrResponse response;
+  unsigned char* dataPtr = nullptr;
+  m_mediaConverter.readFrameToPtr(&dataPtr);
+  response.framePts = m_mediaConverter.MRState().VideoFramePts();
+  response.width = m_mediaConverter.MRState().VideoWidth();
+  response.height = m_mediaConverter.MRState().VideoHeight();
+  response.data = (unsigned int)dataPtr;
+  return response;
+}
+
 Response MediaPlayer::SeekTo(long pts)
 {
-  std::cout << "Seeking to: " << std::to_string(pts) << std::endl;
+  bool success = m_mediaConverter.seekToFrame(pts) == ErrorCode::SUCCESS;
+  Response r = {
+    .format = "Seek",
+    .duration = pts,
+    .framePts = pts,
+    .isOpen = success
+  };
+  return r;
 }
 
 EMSCRIPTEN_BINDINGS(MediaPlayerModule)
@@ -61,11 +80,18 @@ EMSCRIPTEN_BINDINGS(MediaPlayerModule)
       .field("width", &BufferResponse::width)
       .field("height", &BufferResponse::height)
       .field("buffer", &BufferResponse::buffer);
+
+    emscripten::value_object<DataPtrResponse>("DataPtrResponse")
+      .field("framePts", &DataPtrResponse::framePts)
+      .field("width", &DataPtrResponse::width)
+      .field("height", &DataPtrResponse::height)
+      .field("data", &DataPtrResponse::data);
       
     class_<MediaPlayer>("MediaPlayer")
     .constructor()
     .function("OpenFile", &MediaPlayer::OpenFile)
     .function("RetrieveFrame", &MediaPlayer::RetrieveFrame)
+    .function("RetrieveFramePtr", &MediaPlayer::RetrieveFramePtr)
     .function("SeekTo", &MediaPlayer::SeekTo);
 
     register_vector<unsigned char>("VideoBuffer");

@@ -1,8 +1,7 @@
 add_library(DecoderLib MediaReaderState.cpp MediaConverter.cpp)
 
-set(FFMPEG_INCLUDE_DIR /home/dallas/ffmpeg/wasm/include)
-set(FFMPEG_LIB_DIR /home/dallas/ffmpeg/wasm/lib)
-
+set(FFMPEG_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/ffmpeg/wasm/include)
+set(FFMPEG_LIB_DIR ${CMAKE_SOURCE_DIR}/ffmpeg/wasm/lib)
 find_path(AVCODEC_INCLUDE_DIR libavcodec ${FFMPEG_INCLUDE_DIR})
 find_library(AVCODEC_LIB libavcodec.a ${FFMPEG_LIB_DIR})
 find_library(AVFORMAT_LIB libavformat.a ${FFMPEG_LIB_DIR})

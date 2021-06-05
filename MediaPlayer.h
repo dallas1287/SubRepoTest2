@@ -21,6 +21,14 @@ typedef struct BufferResponse
   std::vector<unsigned char> buffer;
 } BufferResponse;
 
+typedef struct DataPtrResponse
+{
+    long framePts;
+    int width;
+    int height;
+    unsigned int data;
+} DataPtrResponse;
+
 class MediaPlayer
 {
 public:
@@ -29,5 +37,6 @@ public:
     
     Response OpenFile(std::string filename);
     BufferResponse RetrieveFrame();
+    DataPtrResponse RetrieveFramePtr();
     Response SeekTo(long pts);
 };

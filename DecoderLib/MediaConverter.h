@@ -35,6 +35,9 @@ public:
 	ErrorCode readVideoFrame(MediaReaderState* state, VideoBuffer& buffer);
 	ErrorCode readVideoFrame(VideoBuffer& buffer);
 
+	ErrorCode readFrameToPtr(MediaReaderState* state, unsigned char** dataPtr);
+	ErrorCode readFrameToPtr(unsigned char** dataPtr);
+
 	ErrorCode fullyProcessAudioFrame(MediaReaderState* state, AudioBuffer& audioBuffer);
 	ErrorCode fullyProcessAudioFrame(AudioBuffer& audioBuffer);
 
@@ -46,6 +49,8 @@ public:
 
 	ErrorCode outputToBuffer(VideoBuffer& buffer);
 	ErrorCode outputToBuffer(MediaReaderState*, VideoBuffer& buffer);
+	ErrorCode outputToBuffer(unsigned char** dataPtr);
+	ErrorCode outputToBuffer(MediaReaderState* state, unsigned char** dataPtr);
 
 	ErrorCode outputToAudioBuffer(AudioBuffer& audioBuffer, bool freeFrame = true);
 	ErrorCode outputToAudioBuffer(MediaReaderState*, AudioBuffer& audioBuffer, bool freeFrame = true);

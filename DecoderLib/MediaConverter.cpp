@@ -120,6 +120,24 @@ ErrorCode CMediaConverter::readVideoFrame(MediaReaderState* state, VideoBuffer& 
     return outputToBuffer(state, buffer);
 }
 
+ErrorCode CMediaConverter::readFrameToPtr(unsigned char** dataPtr)
+{
+    return readFrameToPtr(&m_mrState, dataPtr);
+}
+
+ErrorCode CMediaConverter::readFrameToPtr(MediaReaderState* state, unsigned char** dataPtr)
+{
+    ErrorCode response = processVideoPacketsIntoFrames(state);
+
+    if (response == ErrorCode::FILE_EOF)
+    {
+        avcodec_flush_buffers(state->video_codec_ctx);
+        return response;
+    }
+
+    return outputToBuffer(state, dataPtr);
+}
+
 ErrorCode CMediaConverter::fullyProcessAudioFrame(AudioBuffer& audioBuffer)
 {
     return fullyProcessAudioFrame(&m_mrState, audioBuffer);
@@ -355,6 +373,44 @@ ErrorCode CMediaConverter::outputToBuffer(MediaReaderState* state, VideoBuffer& 
 
     //using 4 here because RGB0 designates 4 channels of values
     unsigned char* dest[4] = { &buffer[0], NULL, NULL, NULL };
+    int dest_linesize[4] = { state->VideoWidth() * 4, 0, 0, 0 };
+
+    int ret = sws_scale(state->sws_scaler_ctx, state->av_frame->data, state->av_frame->linesize, 0, state->VideoHeight(), dest, dest_linesize);
+
+    av_frame_unref(state->av_frame);
+
+    return ret > 0 ? ErrorCode::SUCCESS : ErrorCode::BAD_SCALE;
+}
+
+ErrorCode CMediaConverter::outputToBuffer(unsigned char** dataPtr)
+{
+    return outputToBuffer(&m_mrState, dataPtr);
+}
+
+ErrorCode CMediaConverter::outputToBuffer(MediaReaderState* state, unsigned char** dataPtr)
+{
+    if (!state->video_codec_ctx)
+        return ErrorCode::NO_CODEC_CTX;
+    //setup scaler
+    if (!state->sws_scaler_ctx)
+    {
+        state->sws_scaler_ctx = sws_getContext(state->VideoWidth(), state->VideoHeight(), state->video_codec_ctx->pix_fmt, //input
+            state->VideoWidth(), state->VideoHeight(), AV_PIX_FMT_RGBA, //output
+            SWS_BILINEAR, NULL, NULL, NULL); //options
+    }
+    if (!state->sws_scaler_ctx)
+        return ErrorCode::NO_SCALER;
+    uint64_t w = state->av_frame->width;
+    uint64_t h = state->av_frame->height;
+    uint64_t size = w * h * 4;
+
+    if (size == 0)
+        return ErrorCode::NO_DATA_AVAIL;
+
+    *dataPtr = new unsigned char[size]; 
+
+    //using 4 here because RGB0 designates 4 channels of values
+    unsigned char* dest[4] = { *dataPtr, NULL, NULL, NULL };
     int dest_linesize[4] = { state->VideoWidth() * 4, 0, 0, 0 };
 
     int ret = sws_scale(state->sws_scaler_ctx, state->av_frame->data, state->av_frame->linesize, 0, state->VideoHeight(), dest, dest_linesize);
