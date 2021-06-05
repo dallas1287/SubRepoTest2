@@ -27,9 +27,14 @@ onmessage = (e) => {
     }
     else if(cmd === 'play')
     {
-        const frame = instance.RetrieveFrame();
-        console.log(frame.buffer.size());
-        postMessage(frame);
+        const frame = instance.RetrieveFramePtr();
+        console.log(frame);
+
+        const data = new Uint8Array(HEAPU8.buffer, frame.data, frame.width * frame.height * 4);
+        console.log(data);
+        Module._free(frame.data);
+
+        postMessage({width: frame.width, height: frame.height, buffer: data});
     }
     else if(cmd === 'pause')
     {
@@ -37,11 +42,8 @@ onmessage = (e) => {
     }
     else if(cmd === 'next frame')
     {
-        const frame = instance.RetrieveFrame();
-        console.log('in worker');
-        console.log(frame);
-        console.log(frame.buffer.size());
-        postMessage(frame);
+        const seek = instance.SeekTo(54000);
+        console.log(seek);
     }
     else if(cmd === 'prev frame')
     {
